@@ -1,6 +1,6 @@
-# CubicalRipser revision
+# CubicalRipser for 2 dimensional cubical data
 
-2018/01/03  by Takeki Sudou and Kazushi Ahara, Meiji University
+copyright by Takeki Sudou and Kazushi Ahara, Meiji University, 2018
 
 
 
