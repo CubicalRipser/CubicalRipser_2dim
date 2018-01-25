@@ -24,7 +24,6 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //#define PRINT_PERSISTENCE_PAIRS
 #define FILE_OUTPUT
-//#define CSV_OUTPUT
 
 #define LINK_FIND
 //#define COMPUTEPAIRS
@@ -154,38 +153,43 @@ int main(int argc, char** argv){
 	}
 
 	
-
 #ifdef FILE_OUTPUT
 	ofstream writing_file;
-	writing_file.open(output_filename, ios::out | ios::binary);
 
-	if(!writing_file.is_open()){
-		cout << " error: open file for output failed! " << endl;
+	string extension = ".csv";
+	if(equal(extension.rbegin(), extension.rend(), output_filename.rbegin()) == true){
+		#define CSV_OUTPUT
+	} else {
+
+		writing_file.open(output_filename, ios::out | ios::binary);
+
+		if(!writing_file.is_open()){
+			cout << " error: open file for output failed! " << endl;
+		}
+
+		int64_t mn = 8067171840;
+		writing_file.write((char *) &mn, sizeof( int64_t )); // magic number
+		int64_t type = 2;
+		writing_file.write((char *) &type, sizeof( int64_t )); // type number of PERSISTENCE_DIAGRAM
+		int64_t p = writepairs.size();
+		cout << "the number of pairs : " << p << endl;
+		writing_file.write((char *) &p, sizeof( int64_t )); // number of points in the diagram p
+		for(int64_t i = 0; i < p; ++i){
+			int64_t writedim = writepairs[i].getDimension();
+			writing_file.write((char *) &writedim, sizeof( int64_t )); // dim
+
+			double writebirth = writepairs[i].getBirth();
+			writing_file.write((char *) &writebirth, sizeof( double )); // birth
+			
+			double writedeath = writepairs[i].getDeath();
+			writing_file.write((char *) &writedeath, sizeof( double )); // death
+		}
+		writing_file.close();
 	}
-
-	int64_t mn = 8067171840;
-	writing_file.write((char *) &mn, sizeof( int64_t )); // magic number
-	int64_t type = 2;
-	writing_file.write((char *) &type, sizeof( int64_t )); // type number of PERSISTENCE_DIAGRAM
-	int64_t p = writepairs.size();
-	cout << "the number of pairs : " << p << endl;
-	writing_file.write((char *) &p, sizeof( int64_t )); // number of points in the diagram p
-	for(int64_t i = 0; i < p; ++i){
-		int64_t writedim = writepairs[i].getDimension();
-		writing_file.write((char *) &writedim, sizeof( int64_t )); // dim
-
-		double writebirth = writepairs[i].getBirth();
-		writing_file.write((char *) &writebirth, sizeof( double )); // birth
-		
-		double writedeath = writepairs[i].getDeath();
-		writing_file.write((char *) &writedeath, sizeof( double )); // death
-	}
-	writing_file.close();
 #endif
 
 #ifdef CSV_OUTPUT
-	string outname = "dat/"+filename+".csv";
-	ofstream writing_file;
+	string outname = output_filename;
 	writing_file.open(outname, ios::out);
 
 	if(!writing_file.is_open()){
