@@ -158,7 +158,21 @@ int main(int argc, char** argv){
 
 	string extension = ".csv";
 	if(equal(extension.rbegin(), extension.rend(), output_filename.rbegin()) == true){
-		#define CSV_OUTPUT
+		string outname = output_filename;
+		writing_file.open(outname, ios::out);
+
+		if(!writing_file.is_open()){
+			cout << " error: open file for output failed! " << endl;
+		}
+
+		int64_t p = writepairs.size();
+		for(int64_t i = 0; i < p; ++i){
+			writing_file << writepairs[i].getDimension() << ",";
+
+			writing_file << writepairs[i].getBirth() << ",";
+			writing_file << writepairs[i].getDeath() << endl;
+		}
+		writing_file.close();
 	} else {
 
 		writing_file.open(output_filename, ios::out | ios::binary);
@@ -186,24 +200,6 @@ int main(int argc, char** argv){
 		}
 		writing_file.close();
 	}
-#endif
-
-#ifdef CSV_OUTPUT
-	string outname = output_filename;
-	writing_file.open(outname, ios::out);
-
-	if(!writing_file.is_open()){
-		cout << " error: open file for output failed! " << endl;
-	}
-
-	int64_t p = writepairs.size();
-	for(int64_t i = 0; i < p; ++i){
-		writing_file << writepairs[i].getDimension() << ",";
-
-		writing_file << writepairs[i].getBirth() << ",";
-		writing_file << writepairs[i].getDeath() << endl;
-	}
-	writing_file.close();
 #endif
 
 	return 0;
