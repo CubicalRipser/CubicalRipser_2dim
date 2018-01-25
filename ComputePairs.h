@@ -14,7 +14,6 @@ public:
 	hash_map<int, int> pivot_column_index;
 	int ax, ay;
 	int dim;
-	const int mode=1;
 	vector<WritePairs> *wp;
 
 	ComputePairs(DenseCubicalGrids* _dcg, ColumnsToReduce* _ctr, vector<WritePairs> &_wp);

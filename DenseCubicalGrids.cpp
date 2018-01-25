@@ -21,8 +21,9 @@ DenseCubicalGrids::DenseCubicalGrids(const std::string& filename, double _thresh
 		std::ifstream reading_file; 
 
 		ifstream fin( filename, ios::in | ios::binary ); 
-		int64_t d;
+		cout << filename << endl;
 
+		int64_t d;
 		fin.read( ( char * ) &d, sizeof( int64_t ) ); // magic number
 		//assert(d == 8067171840);
 		fin.read( ( char * ) &d, sizeof( int64_t ) ); // type number
@@ -34,7 +35,7 @@ DenseCubicalGrids::DenseCubicalGrids(const std::string& filename, double _thresh
 		ax = d;
 		fin.read( ( char * ) &d, sizeof( int64_t ) );
 		ay = d;
-		std::cout << "ax : ay = " << ax << " : " << ay <<std::endl;
+		cout << "ax : ay = " << ax << " : " << ay << std::endl;
 
 
 		double dou;
@@ -67,9 +68,9 @@ DenseCubicalGrids::DenseCubicalGrids(const std::string& filename, double _thresh
 		std::getline(reading_file, reading_line_buffer); 
 		ay = std::atoi(reading_line_buffer.c_str()); 
 
-		for (int y = 0; y <ay+2; y++) { 
-			for (int x = 0; x < ax+2; x++) { 
-				if(0<x && x<=ax && 0<y && y<=ay){ 
+		for (int y = 0; y <ay + 2; ++y) { 
+			for (int x = 0; x < ax + 2; ++x) { 
+				if(0 < x && x <= ax && 0 < y && y <= ay){ 
 					if (!reading_file.eof()) { 
 						std::getline(reading_file, reading_line_buffer); 
 						dense2[x][y] = std::atoi(reading_line_buffer.c_str()); 

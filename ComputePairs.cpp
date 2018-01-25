@@ -22,7 +22,6 @@ using namespace std;
 	// hash_map<int, int> pivot_column_index;
 	// int ax, ay;
 	// int dim;
-	// const int mode = 1;
 	// vector<Writepairs> *wp;
 
 ComputePairs::ComputePairs(DenseCubicalGrids* _dcg, ColumnsToReduce* _ctr, vector<WritePairs> &_wp){
@@ -117,7 +116,7 @@ void ComputePairs::compute_pairs_main(){
 						recorded_wc.insert(make_pair(i, working_coboundary));
 						// I output PP as Writepairs
 						double death = pivot.getBirthday();
-						outputPP(dim,birth,death);
+						outputPP(dim, birth, death);
 						pivot_column_index.insert(make_pair(pivot.getIndex(), i));
 						break;
 					}
@@ -127,7 +126,7 @@ void ComputePairs::compute_pairs_main(){
 				}
 			} else {// (B) I have a pivot and output PP as Writepairs 
 				double death = pivot.getBirthday();
-				outputPP(dim,birth,death);
+				outputPP(dim, birth, death);
 				pivot_column_index.insert(make_pair(pivot.getIndex(), i));
 				break;
 			}			
@@ -202,7 +201,7 @@ void ComputePairs::assemble_columns_to_reduce() {
 		}
 	}
 	sort(ctr->columns_to_reduce.begin(), ctr->columns_to_reduce.end(), BirthdayIndexComparator());
-	cout << ctr->columns_to_reduce.size() << endl;
+	//cout << ctr->columns_to_reduce.size() << endl;
 	/*for(int i = 0; i < ctr->size(); i++){
 		cout << ctr->columns_to_reduce[i].getBirthday() << " : " << ctr->columns_to_reduce[i].getIndex() << endl;
 	}*/
