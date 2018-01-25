@@ -23,10 +23,8 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 //#define PRINT_PERSISTENCE_PAIRS
-//#define TIME_MEASURING
-
-//#define FILE_OUTPUT
-#define CSV_OUTPUT
+#define FILE_OUTPUT
+//#define CSV_OUTPUT
 
 #define LINK_FIND
 //#define COMPUTEPAIRS
@@ -50,68 +48,116 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "UnionFind.h"
 #include "ComputePairs.h"
 
-#ifdef TIME_MEASURING
-#include <chrono> // time measuring
-#endif
-
 using namespace std;
 
+enum calculation_method { LINKFIND, COMPUTEPAIRS};
+
+void print_usage_and_exit(int exit_code) {
+	std::cerr << "Usage: "
+	          << "CR2 "
+	          << "[options] [input_filename]" << std::endl
+	          << std::endl
+	          << "Options:" << std::endl
+	          << std::endl
+	          << "  --help           print this screen" << std::endl
+	          << "  --format         use the specified file format for the input. Options are:" << std::endl
+	          << "                     dipha          (distance matrix in DIPHA file format; default)" << std::endl
+	          << "                     perseus        (distance matrix in Perseus file format)" << std::endl
+	          << "  --threshold <t>  compute cubical complexes up to birth time <t>" << std::endl
+	          << "  --method         method to compute the persistent homology of the cubical complexes. Options are" << std::endl
+	          << "                     link_find      (calculating the 0-dim PP, use 'link_find' algorithm; default)" << std::endl
+	          << "                     compute_pairs  (calculating the 0-dim PP, use 'compute_pairs' algorithm)" << std::endl
+	          << "  --output         name of file that will contain the persistence diagram " << std::endl
+	          << std::endl;
+
+	exit(exit_code);
+}
 
 
-int main(){
-#ifdef TIME_MEASURING
-	const auto startTime = chrono::system_clock::now();
-#endif
+int main(int argc, char** argv){
+	const char* filename = nullptr;
+	string output_filename = "answer_3dim.diagram"; //default name
+	file_format format = DIPHA;
+	calculation_method method = LINKFIND;
+	double threshold = 99999;
+
+	for (int i = 1; i < argc; ++i) {
+		const std::string arg(argv[i]);
+		if (arg == "--help") {
+			print_usage_and_exit(0);
+		} else if (arg == "--threshold") {
+			std::string parameter = std::string(argv[++i]);
+			size_t next_pos;
+			threshold = std::stod(parameter, &next_pos);
+			if (next_pos != parameter.size()) print_usage_and_exit(-1);
+		} else if (arg == "--format") {
+			std::string parameter = std::string(argv[++i]);
+			if (parameter == "dipha") {
+				format = DIPHA;
+			} else if (parameter == "perseus") {
+				format = PERSEUS;
+			} else {
+				print_usage_and_exit(-1);
+			}
+		} else if(arg == "--method") {
+			std::string parameter = std::string(argv[++i]);
+			if (parameter == "link_find") {
+				method = LINKFIND;
+			} else if (parameter == "compute_pairs") {
+				method = COMPUTEPAIRS;
+			} else {
+				print_usage_and_exit(-1);
+			}
+		} else if (arg == "--output") {
+			output_filename = std::string(argv[++i]);
+		} else {
+			if (filename) { print_usage_and_exit(-1); }
+			filename = argv[i];
+		}
+	}
+
+    std::ifstream file_stream(filename);
+	if (filename && file_stream.fail()) {
+		std::cerr << "couldn't open file " << filename << std::endl;
+		exit(-1);
+	}
+
 	vector<WritePairs> writepairs; // dim birth death
 	writepairs.clear();
-	//writepairs.reserve();
-	
-	//string filename("data-1");
-	//string filename("noise_2_1000");
-	string filename("test_2_100");
-
-	DenseCubicalGrids* dcg = new DenseCubicalGrids("dat/"+filename+".complex", 99999, 0);
 	
 
-	//DenseCubicalGrids* dcg = new DenseCubicalGrids("dat/data-1.complex", 99999, 0);
-	//DenseCubicalGrids* dcg = new DenseCubicalGrids("dat/noise_2_1000.complex", 99999, 0);
-	//DenseCubicalGrids* dcg = new DenseCubicalGrids("dat/test_2_10.complex", 99999, 0);
-	//DenseCubicalGrids* dcg = new DenseCubicalGrids("dat/test_2_100.complex", 99999, 0);
-	//DenseCubicalGrids* dcg = new DenseCubicalGrids("dat/threeDiamonds.txt", 99999, 1);
-	//DenseCubicalGrids* dcg = new DenseCubicalGrids("dat/linksample.txt", 99999, 1);
-	//DenseCubicalGrids* dcg = new DenseCubicalGrids("dat/linksample2.txt", 99999, 1);
-	//DenseCubicalGrids* dcg = new DenseCubicalGrids("dat/one_square_cubical.txt", 99999, 1);
-	//DenseCubicalGrids* dcg = new DenseCubicalGrids("dat/sample1_cubical.txt", 99999, 1);
-	//DenseCubicalGrids* dcg = new DenseCubicalGrids("dat/test_2_10.diagram", 99999, 3);
-	//DenseCubicalGrids* dcg = new DenseCubicalGrids("test.diagram", 99999, 3);
-	//DenseCubicalGrids* dcg = new DenseCubicalGrids("dat/data-1.diagram", 99999, 3);
-	ColumnsToReduce* ctr = new ColumnsToReduce(dcg); 
+	DenseCubicalGrids* dcg = new DenseCubicalGrids(filename, threshold, format);
+	ColumnsToReduce* ctr = new ColumnsToReduce(dcg);
+	
+	switch(method){
+		case LINKFIND:
+		{
+			JointPairs* jp = new JointPairs(dcg, ctr, writepairs);
+			jp->joint_pairs_main(); // dim0
 
-	cout << filename << ".complex" << endl;
-#ifdef LINK_FIND
-	JointPairs* jp = new JointPairs(dcg, ctr, writepairs);
-	jp->joint_pairs_main();
-	cout << "dim0 pair : " << writepairs.size() << endl;
-	int a = writepairs.size();
-	ComputePairs* cp = new ComputePairs(dcg, ctr, writepairs);
-	cp->compute_pairs_main(); // dim1
-	cout << "dim1 pair : " << writepairs.size() - a << endl;
-#endif
+			ComputePairs* cp = new ComputePairs(dcg, ctr, writepairs);
+			cp->compute_pairs_main(); // dim1
+		
+		break;
+		}
+		
+		case COMPUTEPAIRS:
+		{
+			ComputePairs* cp = new ComputePairs(dcg, ctr, writepairs);
+			cp->compute_pairs_main(); // dim0
+			cp->assemble_columns_to_reduce();
 
-#ifdef COMPUTEPAIRS	
-	ComputePairs* cp = new ComputePairs(dcg, ctr, writepairs);
-	cp->compute_pairs_main(); // dim0
-	cp->assemble_columns_to_reduce();
-	cout << "dim0 pair : " << writepairs.size() << endl;
-	int a = writepairs.size();
-	cp->compute_pairs_main(); // dim1
-	cout << "dim1 pair : " << writepairs.size() - a << endl;
-#endif
+			cp->compute_pairs_main(); // dim1
+	
+		break;
+		}
+	}
+
+	
 
 #ifdef FILE_OUTPUT
-	string outname = "dat/"+filename+".diagram";
 	ofstream writing_file;
-	writing_file.open(outname, ios::out | ios::binary);
+	writing_file.open(output_filename, ios::out | ios::binary);
 
 	if(!writing_file.is_open()){
 		cout << " error: open file for output failed! " << endl;
@@ -154,12 +200,6 @@ int main(){
 		writing_file << writepairs[i].getDeath() << endl;
 	}
 	writing_file.close();
-#endif
-
-#ifdef TIME_MEASURING
-	const auto endTime = chrono::system_clock::now();
-	const auto timeSpan = endTime - startTime;
-	cout << "processing-time : " << chrono::duration_cast<std::chrono::milliseconds>(timeSpan).count() << "[ms]" << std::endl;
 #endif
 
 	return 0;

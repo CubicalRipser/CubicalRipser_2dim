@@ -1,6 +1,8 @@
 //DenseCubicalGrids.h
 #include <string>
 
+enum file_format { DIPHA, PERSEUS };
+
 class DenseCubicalGrids { // file_read
 
 public:
@@ -8,8 +10,8 @@ public:
 	int dim;
 	int ax, ay;
 	double dense2[2048][1024];
-	int flag;
+	file_format format;
 
-	DenseCubicalGrids(const std::string& filename, double _threshold, int _flag) ; 
+	DenseCubicalGrids(const std::string& filename, double _threshold, file_format _format) ; 
 	double getBirthday(int index, int dim);
 };

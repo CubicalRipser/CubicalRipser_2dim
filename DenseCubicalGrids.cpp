@@ -11,18 +11,13 @@
 
 using namespace std;
 
-// double threshold;
-// int dim;
-// int ax, ay;
-// double dense2[2048][1024];
-// int flag;
 
-DenseCubicalGrids::DenseCubicalGrids(const std::string& filename, double _threshold, int _flag)  {
+DenseCubicalGrids::DenseCubicalGrids(const std::string& filename, double _threshold, file_format _format)  {
 	
 	threshold = _threshold;
-	flag = _flag;
+	format = _format;
 
-	if(flag == 0){// ???.complex, DIPHA format
+	if(format == DIPHA){// ???.complex, DIPHA format
 		std::ifstream reading_file; 
 
 		ifstream fin( filename, ios::in | ios::binary ); 
@@ -59,7 +54,7 @@ DenseCubicalGrids::DenseCubicalGrids(const std::string& filename, double _thresh
 			}
 		}
 		fin.close();
-	}  else if(flag == 1){// PERCEUS format
+	}  else if(format == PERSEUS){// PERSEUS format
 
 		std::ifstream reading_file; 
 		reading_file.open(filename.c_str(), std::ios::in); 
@@ -88,99 +83,7 @@ DenseCubicalGrids::DenseCubicalGrids(const std::string& filename, double _thresh
 				} 
 			} 
 		}
-	} else if(flag == 2){ // convert "DIPHA format" into "Perseus format"
-		std::ifstream reading_file; 
-
-		ifstream fin( filename, ios::in | ios::binary ); 
-		int64_t d;
-
-		string outname = "test.txt";
-		ofstream writing_file;
-		writing_file.open(outname, ios::out);
-
-		fin.read( ( char * ) &d, sizeof( int64_t ) ); // magic number
-		//assert(d == 8067171840);
-		fin.read( ( char * ) &d, sizeof( int64_t ) ); // type number
-		//assert(d == 1);
-		fin.read( ( char * ) &d, sizeof( int64_t ) ); //data num
-		fin.read( ( char * ) &d, sizeof( int64_t ) ); // dim 
-		dim = d;
-		writing_file << dim << std::endl;
-		fin.read( ( char * ) &d, sizeof( int64_t ) );
-		ax = d;
-		writing_file << ax << std::endl;
-		fin.read( ( char * ) &d, sizeof( int64_t ) );
-		ay = d;
-		writing_file << ay << std::endl;
-		std::cout << "ax : ay = " << ax << " : " << ay <<std::endl;
-
-		double dou;
-		for (int y = 0; y < ay + 2; ++y) {
-			for (int x = 0; x < ax + 2; ++x) {
-				if(0 < x && x <= ax && 0 < y && y <= ay){
-					if (!fin.eof()) {
-						fin.read( ( char * ) &dou, sizeof( double ) );
-						dense2[x][y] = dou;
-						writing_file << dou << std::endl;
-					} else {
-						cout << "file endof error " << endl;
-					}
-				}
-				else {
-					dense2[x][y] = threshold;
-				}
-			}
-		}
-
-		writing_file.close();
-		fin.close();
-	} else if(flag == 3){ // covert "DIPHA answer" into "list format"
-		std::ifstream reading_file; // **.diagram
-
-		ifstream fin( filename, ios::in | ios::binary ); 
-		int64_t d;
-
-		string outname = "answer.txt";
-		ofstream writing_file;
-		writing_file.open(outname, ios::out);
-
-		fin.read( ( char * ) &d, sizeof( int64_t ) ); // magic number
-		//assert(d == 8067171840);
-		writing_file << d << std::endl;
-		fin.read( ( char * ) &d, sizeof( int64_t ) ); // type number
-		//assert(d == 2);
-		writing_file << d << std::endl;
-		fin.read( ( char * ) &d, sizeof( int64_t ) ); //data num
-		int64_t p = d;
-		writing_file << p << std::endl;
-
-		double dou;
-		double birth;
-		double death;
-		for(int i = 0; i < p; i++){
-			// dim
-			fin.read( ( char * ) &d, sizeof( int64_t ) );
-			dim = d;
-			//writing_file << dim << std::endl;
-
-			// birth
-			fin.read( ( char * ) &dou, sizeof( double ) );
-			birth = dou;
-			//writing_file << birth << std::endl;
-
-			// death
-			fin.read( ( char * ) &dou, sizeof( double ) );
-			death = dou;
-			//writing_file << death << std::endl;
-
-			writing_file << dim << "," << birth << "," << death << endl;
-
-			cout << "dim " << dim << " : [" << birth << "," << death << ")" << endl; 
-		}
-
-		writing_file.close();
-		fin.close();
-	}
+	} 
 }
 
 

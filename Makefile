@@ -1,4 +1,4 @@
-TARGET = CRR
+TARGET = CR2
 SRCS = CubicalRipser_2dim.cpp DenseCubicalGrids.cpp BirthdayIndex.cpp ColumnsToReduce.cpp SimplexCoboundaryEnumerator.cpp UnionFind.cpp WritePairs.cpp ComputePairs.cpp
 OBJS = CubicalRipser_2dim.o DenseCubicalGrids.o BirthdayIndex.o ColumnsToReduce.o SimplexCoboundaryEnumerator.o UnionFind.o WritePairs.o ComputePairs.o
  
