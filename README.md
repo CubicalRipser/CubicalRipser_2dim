@@ -1,6 +1,6 @@
 # CubicalRipser_2dim : calculator of persistence pair for 2 dimensional pixel data
 
-copyright by Takeki Sudou and Kazushi Ahara, Meiji University, 2018
+copyright by Takeki Sudo and Kazushi Ahara, Meiji University, 2018
 
 ## description
 
