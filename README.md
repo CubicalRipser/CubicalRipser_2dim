@@ -26,13 +26,13 @@ To make an exe file,
 
 To execute CubicalRiper, 
 
-% CR2 [oprtion] [filename]
+% CR2 [oprtion] [input_filename]
 
 ## option:
 
 --output [output_filename] 
 
-name of file that will contain the persistence diagram. If the filename ends '.csv' then CR2 outputs a CSV file.  Otherwise, output file is DIPHA diagram file.
+name of file that will contain the persistence diagram. If the input_filename ends '.csv' then CR2 outputs a CSV file.  Otherwise, output file is DIPHA diagram file.
 
 ## about speed
 
