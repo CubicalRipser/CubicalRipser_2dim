@@ -40,7 +40,7 @@ To execute CubicalRipser,
 	  
         dipha          (pixel data in DIPHA file format; default
        
-        perseus        (picel data in Perseus file format)
+        perseus        (pixel data in Perseus file format)
 
     --threshold <t>  
   
