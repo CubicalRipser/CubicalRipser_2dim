@@ -38,9 +38,9 @@ To execute CubicalRipser,
 
         use the specified file format for the input. Options are:
 	  
-        dipha          (distance matrix in DIPHA file format; default
+        dipha          (pixel data in DIPHA file format; default
        
-        perseus        (distance matrix in Perseus file format)
+        perseus        (picel data in Perseus file format)
 
     --threshold <t>  
   
@@ -50,9 +50,9 @@ To execute CubicalRipser,
 
         method to compute the persistent homology of the cubical complexes. Options are:
 
-            link_find      (calculating the 0-dim PP, use 'link_find' algorithm; default)" << std::endl
+            link_find      (calculating the 0-dim PP, use 'link_find' algorithm; default)
 
-            compute_pairs  (calculating the 0-dim PP, use 'compute_pairs' algorithm)" << std::end
+            compute_pairs  (calculating the 0-dim PP, use 'compute_pairs' algorithm)
 
     --output [output_filename] 
 
