@@ -22,41 +22,42 @@ This part of CubicalRiper is a calculator of cubical persistence pairs for
 
 To make an exe file, 
 
-% make
+    % make
 
 To execute CubicalRipser, 
 
-% CR2 [oprtion] [input_filename]
+    % CR2 [oprtion] [input_filename]
 
 ## option:
 
---help   
+    --help   
 
-    print options
+       print options
 
---format     
+    --format     
 
-    use the specified file format for the input. Options are:
+        use the specified file format for the input. Options are:
 	  
-       dipha          (distance matrix in DIPHA file format; default
+        dipha          (distance matrix in DIPHA file format; default
        
-       perseus        (distance matrix in Perseus file format)
+        perseus        (distance matrix in Perseus file format)
 
---threshold <t>  
+    --threshold <t>  
   
-    compute cubical complexes up to birth time <t>
+        compute cubical complexes up to birth time <t>
     
---method 
+    --method 
 
-    method to compute the persistent homology of the cubical complexes. Options are:
+        method to compute the persistent homology of the cubical complexes. Options are:
 
-        link_find      (calculating the 0-dim PP, use 'link_find' algorithm; default)" << std::endl
+            link_find      (calculating the 0-dim PP, use 'link_find' algorithm; default)" << std::endl
 
-        compute_pairs  (calculating the 0-dim PP, use 'compute_pairs' algorithm)" << std::end
+            compute_pairs  (calculating the 0-dim PP, use 'compute_pairs' algorithm)" << std::end
 
---output [output_filename] 
+    --output [output_filename] 
 
-    name of file that will contain the persistence diagram. If the input_filename ends '.csv' then CR2 outputs a CSV file.  Otherwise, output file is DIPHA diagram file.
+        name of file that will contain the persistence diagram. If the input_filename ends '.csv' then CR2 
+	outputs a CSV file. Otherwise, output file is DIPHA diagram file.
 
 ## about speed
 
