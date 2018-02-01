@@ -1,7 +1,5 @@
 //UnionFind.cpp
 
-//#define PRINT_PERSISTENCE_PAIRS
-
 #include <iostream>
 #include <algorithm>
 #include <queue>
@@ -33,8 +31,8 @@ UnionFind::UnionFind(int moi, DenseCubicalGrids* _dcg) : parent(moi), birthtime(
 
 	for(int i = 0; i < moi; ++i){
 		parent[i] = i;
-		birthtime[i] = dcg->getBirthday(i, 0);
-		time_max[i] = dcg->getBirthday(i, 0);
+		birthtime[i] = dcg -> getBirthday(i, 0);
+		time_max[i] = dcg -> getBirthday(i, 0);
 	}
 }
 
@@ -82,13 +80,14 @@ void UnionFind::link(int x, int y){
 // vector<int64_t> cubes_edges;
 // vector<BirthdayIndex> dim1_simplex_list;
 
-JointPairs::JointPairs(DenseCubicalGrids* _dcg, ColumnsToReduce* _ctr, vector<WritePairs> &_wp){
+JointPairs::JointPairs(DenseCubicalGrids* _dcg, ColumnsToReduce* _ctr, vector<WritePairs> &_wp, const bool _print){
 	dcg = _dcg;
-	ax = dcg->ax;
-	ay = dcg->ay;
+	ax = dcg -> ax;
+	ay = dcg -> ay;
 	ctr = _ctr; // ctr is "dim0"simplex list.
-	ctr_moi = ctr->max_of_index;
-	n = ctr->columns_to_reduce.size();
+	ctr_moi = ctr -> max_of_index;
+	n = ctr -> columns_to_reduce.size();
+	print = _print;
 
 	wp = &_wp;
 
@@ -96,7 +95,7 @@ JointPairs::JointPairs(DenseCubicalGrids* _dcg, ColumnsToReduce* _ctr, vector<Wr
 		for(int y = 1; y <= ay; ++y){
 			for(int type = 0; type < 2; ++type){
 				int index = x | (y << 11) | (type << 21);
-				double birthday = dcg->getBirthday(index, 1);
+				double birthday = dcg -> getBirthday(index, 1);
 				if(birthday < dcg -> threshold){
 					dim1_simplex_list.push_back(BirthdayIndex(birthday, index, 1));
 				}
@@ -109,29 +108,30 @@ JointPairs::JointPairs(DenseCubicalGrids* _dcg, ColumnsToReduce* _ctr, vector<Wr
 void JointPairs::joint_pairs_main(){
 	//cubes_edges.reserve(2);
 	UnionFind dset(ctr_moi, dcg);
-	ctr->columns_to_reduce.clear();
-	ctr->dim = 1;
+	ctr -> columns_to_reduce.clear();
+	ctr -> dim = 1;
 	double min_birth = dcg -> threshold;
-#ifdef PRINT_PERSISTENCE_PAIRS
-	cout << "persistence intervals in dim " << 0 << ":" << endl;
-#endif
+
+	if(print == true){
+		cout << "persistence intervals in dim " << 0 << ":" << endl;
+	}
 
 	for(BirthdayIndex e : dim1_simplex_list){
 		//cubes_edges.clear();
 
 		int index = e.getIndex();
 		int cx = index & 0x07ff;
-		int cy = (index>>11)&0x03ff;
-		int cm = (index>>21)&0xff;
+		int cy = (index >> 11) & 0x03ff;
+		int cm = (index >> 21) & 0xff;
 		int ce0=0, ce1 =0;
 		switch(cm){
 		case 0:
 			ce0 =  ((cy) << 11) | (cx);
-			ce1 =  ((cy) << 11) | (cx+1);
+			ce1 =  ((cy) << 11) | (cx + 1);
 			break;
 		default:
 			ce0 =  ((cy) << 11) | (cx);
-			ce1 =  ((cy+1) << 11) | (cx);
+			ce1 =  ((cy + 1) << 11) | (cx);
 			break;
 		}
 		u = dset.find(ce0);
@@ -147,9 +147,10 @@ void JointPairs::joint_pairs_main(){
 			if(birth == death){
 				dset.link(u, v);
 			} else {
-#ifdef PRINT_PERSISTENCE_PAIRS
-				cout << "[" << birth << "," << death << ")" << endl;
-#endif
+				if(print == true){
+					cout << "[" << birth << "," << death << ")" << endl;
+				}
+				
 				wp->push_back(WritePairs(0, birth, death));
 				dset.link(u, v);
 			}
@@ -158,9 +159,10 @@ void JointPairs::joint_pairs_main(){
 		}
 	}
 
-#ifdef PRINT_PERSISTENCE_PAIRS
-	cout << "[" << min_birth << ", )" << endl;
-#endif
-	wp->push_back(WritePairs(-1, min_birth, dcg->threshold));
-	sort(ctr->columns_to_reduce.begin(), ctr->columns_to_reduce.end(), BirthdayIndexComparator());
+	if(print == true){
+		cout << "[" << min_birth << ", )" << endl;
+	}
+
+	wp -> push_back(WritePairs(-1, min_birth, dcg -> threshold));
+	sort(ctr -> columns_to_reduce.begin(), ctr -> columns_to_reduce.end(), BirthdayIndexComparator());
 }

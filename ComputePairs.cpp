@@ -1,5 +1,4 @@
 //ComputePairs.cpp
-//#define PRINT_PERSISTENCE_PAIRS
 
 
 #include <iostream>
@@ -24,20 +23,22 @@ using namespace std;
 	// int dim;
 	// vector<Writepairs> *wp;
 
-ComputePairs::ComputePairs(DenseCubicalGrids* _dcg, ColumnsToReduce* _ctr, vector<WritePairs> &_wp){
+ComputePairs::ComputePairs(DenseCubicalGrids* _dcg, ColumnsToReduce* _ctr, vector<WritePairs> &_wp, const bool _print){
 	dcg = _dcg;
 	ctr = _ctr;
-	dim = _ctr->dim;
+	dim = _ctr -> dim;
 	wp = &_wp;
+	print = _print;
 
-	ax = _dcg->ax;
-	ay = _dcg->ay;
+	ax = _dcg -> ax;
+	ay = _dcg -> ay;
 }
 
 void ComputePairs::compute_pairs_main(){
-#ifdef PRINT_PERSISTENCE_PAIRS
-	cout << "persistence intervals in dim " << dim << ":" << endl;
-#endif
+	if(print == true){
+		cout << "persistence intervals in dim " << dim << ":" << endl;
+	}
+
 	int printlowerlimit=000;
 	int printupperlimit=6000;
 	bool lineStart=true;
@@ -47,14 +48,14 @@ void ComputePairs::compute_pairs_main(){
 	unordered_map<int, priority_queue<BirthdayIndex, vector<BirthdayIndex>, BirthdayIndexComparator>> recorded_wc;
 
 	pivot_column_index = hash_map<int, int>();
-	auto ctl_size = ctr->columns_to_reduce.size();
+	auto ctl_size = ctr -> columns_to_reduce.size();
 	pivot_column_index.reserve(ctl_size);
 	recorded_wc.reserve(ctl_size);
 
 	
 	for(int i = 0; i < ctl_size; ++i){ 
 		lineStart = true;
-		auto column_to_reduce = ctr->columns_to_reduce[i]; 
+		auto column_to_reduce = ctr -> columns_to_reduce[i]; 
 		priority_queue<BirthdayIndex, vector<BirthdayIndex>, BirthdayIndexComparator> working_coboundary;
 		double birth = column_to_reduce.getBirthday();
 		//cout << "birth : " << birth <<endl;
@@ -93,7 +94,7 @@ void ComputePairs::compute_pairs_main(){
 			if (!goto_found_persistence_pair) {// (A) I haven't had a pivot
 				auto findWc = recorded_wc.find(j);
 				if(findWc != recorded_wc.end()){// if the pivot is old,
-					auto wc = findWc->second;
+					auto wc = findWc -> second;
 					while (!wc.empty()){// we push the data of the old pivot's wc
 						auto e = wc.top();
 						working_coboundary.push(e);
@@ -109,7 +110,7 @@ void ComputePairs::compute_pairs_main(){
 				if (pivot.getIndex() != -1) {//When I have a pivot, ...
 					auto pair = pivot_column_index.find(pivot.getIndex());
 					if (pair != pivot_column_index.end()) {	// if the pivot already exists, go on the loop 
-						j = pair->second;
+						j = pair -> second;
 						continue;
 					} else {// if the pivot is new, 
 						// I record this wc into recorded_wc, and 
@@ -121,7 +122,7 @@ void ComputePairs::compute_pairs_main(){
 						break;
 					}
 				} else {// if wc is empty, I output a PP as [birth,) 
-					outputPP(-1, birth, dcg->threshold);
+					outputPP(-1, birth, dcg -> threshold);
 					break;
 				}
 			} else {// (B) I have a pivot and output PP as Writepairs 
@@ -138,15 +139,17 @@ void ComputePairs::compute_pairs_main(){
 void ComputePairs::outputPP(int _dim, double _birth, double _death){
 	if(_birth != _death){
 		if(_death != dcg-> threshold){
-#ifdef PRINT_PERSISTENCE_PAIRS
-			cout << "[" <<_birth << "," << _death << ")" << endl;
-#endif
+			if(print == true){
+				cout << "[" <<_birth << "," << _death << ")" << endl;
+			}
+			
 			wp->push_back(WritePairs(_dim, _birth, _death));
 		} else {
-#ifdef PRINT_PERSISTENCE_PAIRS
-			cout << "[" << _birth << ", )" << endl;
-#endif
-			wp->push_back(WritePairs(-1, _birth, dcg->threshold));
+			if(print == true){
+				cout << "[" << _birth << ", )" << endl;
+			}
+
+			wp -> push_back(WritePairs(-1, _birth, dcg -> threshold));
 		}
 	}
 }
@@ -182,17 +185,17 @@ BirthdayIndex ComputePairs::get_pivot(priority_queue<BirthdayIndex, vector<Birth
 
 void ComputePairs::assemble_columns_to_reduce() {
 	++dim;
-	ctr->dim = dim;
+	ctr -> dim = dim;
 	const int typenum = 2;
 	if (dim == 1) {
-		ctr->columns_to_reduce.clear();
+		ctr -> columns_to_reduce.clear();
 		for (int y = 1; y <= ay; ++y) {
 			for (int x = 1; x <= ax; ++x) {
 				for (int m = 0; m < typenum; ++m) {
 					double index = x | (y << 11) | (m << 21);
 					if (pivot_column_index.find(index) == pivot_column_index.end()) {
-						double birthday = dcg->getBirthday(index, 1);
-						if (birthday != dcg->threshold) {
+						double birthday = dcg -> getBirthday(index, 1);
+						if (birthday != dcg -> threshold) {
 							ctr->columns_to_reduce.push_back(BirthdayIndex(birthday, index, 1));
 						}
 					}
@@ -200,7 +203,7 @@ void ComputePairs::assemble_columns_to_reduce() {
 			}
 		}
 	}
-	sort(ctr->columns_to_reduce.begin(), ctr->columns_to_reduce.end(), BirthdayIndexComparator());
+	sort(ctr -> columns_to_reduce.begin(), ctr -> columns_to_reduce.end(), BirthdayIndexComparator());
 	//cout << ctr->columns_to_reduce.size() << endl;
 	/*for(int i = 0; i < ctr->size(); i++){
 		cout << ctr->columns_to_reduce[i].getBirthday() << " : " << ctr->columns_to_reduce[i].getIndex() << endl;

@@ -29,11 +29,12 @@ class JointPairs{
 	DenseCubicalGrids* dcg;
 	ColumnsToReduce* ctr;
 	vector<WritePairs> *wp;
+	bool print;
 	double u, v;
 	vector<int64_t> cubes_edges;
 	vector<BirthdayIndex> dim1_simplex_list;
 
 public:
-	JointPairs(DenseCubicalGrids* _dcg, ColumnsToReduce* _ctr, vector<WritePairs> &_wp);
+	JointPairs(DenseCubicalGrids* _dcg, ColumnsToReduce* _ctr, vector<WritePairs> &_wp, const bool _print);
 	void joint_pairs_main();
 };
