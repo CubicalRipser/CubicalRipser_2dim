@@ -22,11 +22,8 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#define PRINT_PERSISTENCE_PAIRS
-#define FILE_OUTPUT
 
-#define LINK_FIND
-//#define COMPUTEPAIRS
+#define FILE_OUTPUT
 
 #include <fstream>
 #include <iostream>
@@ -37,8 +34,6 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <cstdint>
 
-// #include "Coeff.h"
-// #include "Vertices.h"
 #include "DenseCubicalGrids.h"
 #include "BirthdayIndex.h"
 #include "ColumnsToReduce.h"
@@ -128,7 +123,6 @@ int main(int argc, char** argv){
 	vector<WritePairs> writepairs; // dim birth death
 	writepairs.clear();
 	
-
 	DenseCubicalGrids* dcg = new DenseCubicalGrids(filename, threshold, format);
 	ColumnsToReduce* ctr = new ColumnsToReduce(dcg);
 	
@@ -209,4 +203,3 @@ int main(int argc, char** argv){
 	return 0;
 
 }
-

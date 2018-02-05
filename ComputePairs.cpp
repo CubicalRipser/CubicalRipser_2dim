@@ -1,4 +1,31 @@
-//ComputePairs.cpp
+/* ComputePairs.cpp
+
+Copyright 2017-2018 Takeki Sudo and Kazushi Ahara.
+
+This file is part of CubicalRipser_2dim.
+
+CubicalRipser: C++ system for computation of Cubical persistence pairs
+Copyright 2017-2018 Takeki Sudo and Kazushi Ahara.
+CubicalRipser is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your option)
+any later version.
+
+CubicalRipser is deeply depending on 'Ripser', software for Vietoris-Rips 
+persitence pairs by Ulrich Bauer, 2015-2016.  We appreciate Ulrich very much.
+We rearrange his codes of Ripser and add some new ideas for optimization on it 
+and modify it for calculation of a Cubical filtration.
+
+This part of CubicalRiper is a calculator of cubical persistence pairs for 
+2 dimensional pixel data. The input data format conforms to that of DIPHA.
+ See more descriptions in README.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+You should have received a copy of the GNU Lesser General Public License along
+with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 
 #include <iostream>
@@ -14,14 +41,6 @@
 #include "ComputePairs.h"
 
 using namespace std;
-
-
-	// DenseCubicalGrids* dcg;
-	// ColumnsToReduce* ctr;
-	// hash_map<int, int> pivot_column_index;
-	// int ax, ay;
-	// int dim;
-	// vector<Writepairs> *wp;
 
 ComputePairs::ComputePairs(DenseCubicalGrids* _dcg, ColumnsToReduce* _ctr, vector<WritePairs> &_wp, const bool _print){
 	dcg = _dcg;
@@ -39,10 +58,6 @@ void ComputePairs::compute_pairs_main(){
 		cout << "persistence intervals in dim " << dim << ":" << endl;
 	}
 
-	int printlowerlimit=000;
-	int printupperlimit=6000;
-	bool lineStart=true;
-
 	vector<BirthdayIndex> coface_entries;
 	SimplexCoboundaryEnumerator cofaces;
 	unordered_map<int, priority_queue<BirthdayIndex, vector<BirthdayIndex>, BirthdayIndexComparator>> recorded_wc;
@@ -58,7 +73,6 @@ void ComputePairs::compute_pairs_main(){
 		auto column_to_reduce = ctr -> columns_to_reduce[i]; 
 		priority_queue<BirthdayIndex, vector<BirthdayIndex>, BirthdayIndexComparator> working_coboundary;
 		double birth = column_to_reduce.getBirthday();
-		//cout << "birth : " << birth <<endl;
 
 		int j = i;
 		BirthdayIndex pivot(0, -1, 0);
@@ -66,13 +80,6 @@ void ComputePairs::compute_pairs_main(){
 		bool goto_found_persistence_pair = false;
 
 		do {
-			// if(printlowerlimit<=i && i<printupperlimit && i!=j){
-			// 	if(lineStart){
-			// 		cout << endl << i << "-";
-			// 		lineStart=false; 
-			// 	} 
-			// 	cout << j << "," ;
-			// }
 			auto simplex = ctr->columns_to_reduce[j];
 			coface_entries.clear();
 			cofaces.setSimplexCoboundaryEnumerator(simplex, dcg);
@@ -84,7 +91,6 @@ void ComputePairs::compute_pairs_main(){
 					if (pivot_column_index.find(coface.getIndex()) == pivot_column_index.end()) {
 						pivot.copyBirthdayIndex(coface);
 						goto_found_persistence_pair = true;// goto (B)
-						//break;
 					} else {
 						might_be_apparent_pair = false;// goto(A)
 					}
@@ -204,9 +210,4 @@ void ComputePairs::assemble_columns_to_reduce() {
 		}
 	}
 	sort(ctr -> columns_to_reduce.begin(), ctr -> columns_to_reduce.end(), BirthdayIndexComparator());
-	//cout << ctr->columns_to_reduce.size() << endl;
-	/*for(int i = 0; i < ctr->size(); i++){
-		cout << ctr->columns_to_reduce[i].getBirthday() << " : " << ctr->columns_to_reduce[i].getIndex() << endl;
-	}*/
 }
-
