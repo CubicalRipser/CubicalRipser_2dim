@@ -59,6 +59,10 @@ To execute CubicalRipser,
         name of file that will contain the persistence diagram. If the input_filename ends '.csv' then CR2 
 	outputs a CSV file. Otherwise, output file is DIPHA diagram file.
 
+    --print
+
+        print persistence pairs on your console.
+
 ## about speed
 
 In 2 and 3 dimensional case, we believe that CubicalRipser is much faster than DIPHA.
