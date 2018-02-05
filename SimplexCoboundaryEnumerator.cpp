@@ -1,36 +1,41 @@
-//SimplexCoboundaryEnumerator.cpp
+/* SimplexCoboundaryEnumerator.cpp
+
+Copyright 2017-2018 Takeki Sudo and Kazushi Ahara.
+
+This file is part of CubicalRipser_2dim.
+
+CubicalRipser: C++ system for computation of Cubical persistence pairs
+Copyright 2017-2018 Takeki Sudo and Kazushi Ahara.
+CubicalRipser is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your option)
+any later version.
+
+CubicalRipser is deeply depending on 'Ripser', software for Vietoris-Rips 
+persitence pairs by Ulrich Bauer, 2015-2016.  We appreciate Ulrich very much.
+We rearrange his codes of Ripser and add some new ideas for optimization on it 
+and modify it for calculation of a Cubical filtration.
+
+This part of CubicalRiper is a calculator of cubical persistence pairs for 
+2 dimensional pixel data. The input data format conforms to that of DIPHA.
+ See more descriptions in README.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+You should have received a copy of the GNU Lesser General Public License along
+with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 
 #include <iostream>
 #include <algorithm>
 #include <string>
 
-// #include "Coeff.h"
-// #include "Vertices.h"
 #include "DenseCubicalGrids.h"
 #include "BirthdayIndex.h"
 #include "ColumnsToReduce.h"
 #include "SimplexCoboundaryEnumerator.h"
-
-// BirthdayIndex* simplex;
-// DenseCubicalGrids* dcg;
-// int dim;
-// double birthtime;
-// int ax, ay;
-// int cx, cy;
-// int count;
-// BirthdayIndex* nextCoface;
-// double threshold;
-// const int mode = 1; // 0 -> eight neighbourhoods 、 1 -> four neighbourhoods 
-// //
-// // 0 4 2
-// // 7 * 6
-// // 3 5 1
-// //
-// int dx[8] = { -1, 1, 1, -1, 0, 0, 1, -1 };
-// int dy[8] = { 1, -1, 1, -1, 1, -1, 0, 0 };
-// int dcx[8] = { -1, 0, 0, -1, 0, 0, 0, -1 };
-// int dcy[8] = { 0, -1, 0, -1, 0, -1, 0, 0 };
-// int cm1[8] = { 3, 3, 2, 2, 1, 1, 0, 0 };
 
 SimplexCoboundaryEnumerator::SimplexCoboundaryEnumerator(){
 	nextCoface = BirthdayIndex(0, -1, 1);
@@ -45,8 +50,8 @@ void SimplexCoboundaryEnumerator::setSimplexCoboundaryEnumerator(BirthdayIndex _
 	ax = _dcg->ax;
 	ay = _dcg->ay;
 	
-	cx = (simplex.index) & 0x07ff;//
-	cy = (simplex.index >> 11) & 0x03ff;//
+	cx = (simplex.index) & 0x07ff;
+	cy = (simplex.index >> 11) & 0x03ff;
 	cm = (simplex.index >> 21) & 0xff;
 
 	threshold = _dcg->threshold;
@@ -61,25 +66,22 @@ bool SimplexCoboundaryEnumerator::hasNextCoface() {
 	case 0:
 		for (int i = count; i < 4; i++) {
 			switch(i){
-			case 0:/// y+
+			case 0: // y+
 				index = (1 << 21) | ((cy) << 11) | (cx);
 				birthday = max(birthtime, dcg->dense2[cx  ][cy+1]);
 				break;
-			case 1:/// y-
+			case 1: // y-
 				index = (1 << 21) | ((cy-1) << 11) | (cx);
 				birthday = max(birthtime, dcg->dense2[cx  ][cy-1]);
 				break;
-			case 2:/// x+
+			case 2: // x+
 				index = (0 << 21) | ((cy) << 11) | (cx);
 				birthday = max(birthtime, dcg->dense2[cx+1][cy  ]);
 				break;
-			case 3:/// x-
+			case 3: // x-
 				index = (0 << 21) | ((cy) << 11) | (cx-1);
 				birthday = max(birthtime, dcg->dense2[cx-1][cy  ]);
 				break;
-			// default:
-			// 	index = (cm1[i + 4] << 21) | ((cy + dcy[i + 4]) << 11) | (cx + dcx[i + 4]);
-			// 	birthday = max(birthtime, dcg->dense2[cx + dx[i + 4]][cy + dy[i + 4]]);
 			}
 			if (birthday != threshold) {
 				count = i + 1;
@@ -91,7 +93,7 @@ bool SimplexCoboundaryEnumerator::hasNextCoface() {
 	case 1:
 		switch (cm) {
 		case 0:
-			if(count == 0){ // upper(4)
+			if(count == 0){ // upper
 				count++;
 				index = ((cy) << 11) | cx;
 				birthday = max({birthtime, dcg->dense2[cx][cy + 1], dcg->dense2[cx + 1][cy + 1]});
@@ -100,7 +102,7 @@ bool SimplexCoboundaryEnumerator::hasNextCoface() {
 					return true;
 				}
 			} else 
-			if(count == 1){ // lower(5)
+			if(count == 1){ // lower
 				count++;
 				index = ((cy - 1) << 11) | cx;
 				birthday = max({birthtime, dcg->dense2[cx][cy - 1], dcg->dense2[cx + 1][cy - 1]});
@@ -111,7 +113,7 @@ bool SimplexCoboundaryEnumerator::hasNextCoface() {
 			}
 			return false;
 		case 1:
-			if(count == 0){ // right(6)
+			if(count == 0){ // right
 				count ++;
 				index = ((cy) << 11) | cx;
 				birthday = max({birthtime, dcg->dense2[cx + 1][cy], dcg->dense2[cx + 1][cy + 1]});
@@ -120,7 +122,7 @@ bool SimplexCoboundaryEnumerator::hasNextCoface() {
 					return true;
 				}
 			} else 
-			if(count == 1){ //left(7)
+			if(count == 1){ //left
 				count++;
 				index = ((cy) << 11) | (cx - 1);
 				birthday = max({birthtime, dcg->dense2[cx - 1][cy], dcg->dense2[cx - 1][cy + 1]});

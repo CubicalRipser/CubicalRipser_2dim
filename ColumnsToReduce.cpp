@@ -1,22 +1,41 @@
-//ColumnsToReduce.cpp
+/* ColumnsToReduce.cpp
+
+Copyright 2017-2018 Takeki Sudo and Kazushi Ahara.
+
+This file is part of CubicalRipser_2dim.
+
+CubicalRipser: C++ system for computation of Cubical persistence pairs
+Copyright 2017-2018 Takeki Sudo and Kazushi Ahara.
+CubicalRipser is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your option)
+any later version.
+
+CubicalRipser is deeply depending on 'Ripser', software for Vietoris-Rips 
+persitence pairs by Ulrich Bauer, 2015-2016.  We appreciate Ulrich very much.
+We rearrange his codes of Ripser and add some new ideas for optimization on it 
+and modify it for calculation of a Cubical filtration.
+
+This part of CubicalRiper is a calculator of cubical persistence pairs for 
+2 dimensional pixel data. The input data format conforms to that of DIPHA.
+ See more descriptions in README.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+You should have received a copy of the GNU Lesser General Public License along
+with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 
 #include <algorithm>
 #include <unordered_map>
 
-
-// #include "Coeff.h"
-// #include "Vertices.h"
 #include "DenseCubicalGrids.h"
 #include "BirthdayIndex.h"
 #include "ColumnsToReduce.h"
 
 using namespace std;
-
-
-// vector<BirthdayIndex> columns_to_reduce;
-// int dim;
-// int max_of_index;
 
 ColumnsToReduce::ColumnsToReduce(DenseCubicalGrids* _dcg) {
 	dim = 0;
@@ -25,11 +44,11 @@ ColumnsToReduce::ColumnsToReduce(DenseCubicalGrids* _dcg) {
 	max_of_index = 2048*(ay + 2);
 	int index;
 	double birthday;
-	for (int y = ay; y > 0; y--) {
-		for (int x = ax; x > 0; x--) {
-			birthday = _dcg->dense2[x][y];
+	for (int y = ay; y > 0; --y) {
+		for (int x = ax; x > 0; --x) {
+			birthday = _dcg -> dense2[x][y];
 			index = x | (y << 11);
-			if (birthday != _dcg->threshold) {
+			if (birthday != _dcg -> threshold) {
 				columns_to_reduce.push_back(BirthdayIndex(birthday, index, 0));
 			}
 		}

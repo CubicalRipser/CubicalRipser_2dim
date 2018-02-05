@@ -1,29 +1,44 @@
-//UnionFind.cpp
+/* UnionFind.cpp
+
+Copyright 2017-2018 Takeki Sudo and Kazushi Ahara.
+
+This file is part of CubicalRipser_2dim.
+
+CubicalRipser: C++ system for computation of Cubical persistence pairs
+Copyright 2017-2018 Takeki Sudo and Kazushi Ahara.
+CubicalRipser is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your option)
+any later version.
+
+CubicalRipser is deeply depending on 'Ripser', software for Vietoris-Rips 
+persitence pairs by Ulrich Bauer, 2015-2016.  We appreciate Ulrich very much.
+We rearrange his codes of Ripser and add some new ideas for optimization on it 
+and modify it for calculation of a Cubical filtration.
+
+This part of CubicalRiper is a calculator of cubical persistence pairs for 
+2 dimensional pixel data. The input data format conforms to that of DIPHA.
+ See more descriptions in README.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+You should have received a copy of the GNU Lesser General Public License along
+with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 
 #include <iostream>
 #include <algorithm>
 #include <queue>
-// #include <unordered_map>
-// #include <string>
-// #include <cstdint>
 
-// #include "Coeff.h"
-// #include "Vertices.h"
 #include "DenseCubicalGrids.h"
 #include "BirthdayIndex.h"
 #include "ColumnsToReduce.h"
-// #include "SimplexCoboundaryEnumerator.h"
 #include "WritePairs.h"
 #include "UnionFind.h"
 
-
 using namespace std;
-
-	// int max_of_index;
-	// vector<int> parent;
-	// vector<double> birthtime;
-	// vector<double> time_max;
-	// DenseCubicalGrids* dcg;
 	
 UnionFind::UnionFind(int moi, DenseCubicalGrids* _dcg) : parent(moi), birthtime(moi), time_max(moi) { // Thie "n" is the number of cubes.
 	dcg = _dcg;
@@ -69,17 +84,6 @@ void UnionFind::link(int x, int y){
 	}
 }
 
-
-// int n; // the number of cubes
-// int ctr_moi;
-// int ax, ay;
-// DenseCubicalGrids* dcg;
-// ColumnsToReduce* ctr;
-// vector<Writepairs> *wp;
-// double u, v;
-// vector<int64_t> cubes_edges;
-// vector<BirthdayIndex> dim1_simplex_list;
-
 JointPairs::JointPairs(DenseCubicalGrids* _dcg, ColumnsToReduce* _ctr, vector<WritePairs> &_wp, const bool _print){
 	dcg = _dcg;
 	ax = dcg -> ax;
@@ -106,7 +110,6 @@ JointPairs::JointPairs(DenseCubicalGrids* _dcg, ColumnsToReduce* _ctr, vector<Wr
 }
 
 void JointPairs::joint_pairs_main(){
-	//cubes_edges.reserve(2);
 	UnionFind dset(ctr_moi, dcg);
 	ctr -> columns_to_reduce.clear();
 	ctr -> dim = 1;
@@ -117,23 +120,24 @@ void JointPairs::joint_pairs_main(){
 	}
 
 	for(BirthdayIndex e : dim1_simplex_list){
-		//cubes_edges.clear();
 
 		int index = e.getIndex();
 		int cx = index & 0x07ff;
 		int cy = (index >> 11) & 0x03ff;
 		int cm = (index >> 21) & 0xff;
 		int ce0=0, ce1 =0;
+
 		switch(cm){
 		case 0:
-			ce0 =  ((cy) << 11) | (cx);
+			ce0 =  ((cy) << 11) | cx;
 			ce1 =  ((cy) << 11) | (cx + 1);
 			break;
 		default:
-			ce0 =  ((cy) << 11) | (cx);
-			ce1 =  ((cy + 1) << 11) | (cx);
+			ce0 =  ((cy) << 11) | cx;
+			ce1 =  ((cy + 1) << 11) | cx;
 			break;
 		}
+
 		u = dset.find(ce0);
 		v = dset.find(ce1);
 		if(min_birth >= min(dset.birthtime[u], dset.birthtime[v])){
@@ -143,7 +147,6 @@ void JointPairs::joint_pairs_main(){
 		if(u != v){
 			double birth = max(dset.birthtime[u], dset.birthtime[v]);
 			double death = max(dset.time_max[u], dset.time_max[v]);
-			//cout << "birth : death = ( " << birth << " , " << death << " )" <<endl;
 			if(birth == death){
 				dset.link(u, v);
 			} else {
