@@ -57,7 +57,7 @@ void ComputePairs::compute_pairs_main(){
 	if(print == true){
 		cout << "persistence intervals in dim " << dim << ":" << endl;
 	}
-
+  
 	vector<BirthdayIndex> coface_entries;
 	SimplexCoboundaryEnumerator cofaces;
 	unordered_map<int, priority_queue<BirthdayIndex, vector<BirthdayIndex>, BirthdayIndexComparator>> recorded_wc;
@@ -69,7 +69,6 @@ void ComputePairs::compute_pairs_main(){
 
 	
 	for(int i = 0; i < ctl_size; ++i){ 
-		lineStart = true;
 		auto column_to_reduce = ctr -> columns_to_reduce[i]; 
 		priority_queue<BirthdayIndex, vector<BirthdayIndex>, BirthdayIndexComparator> working_coboundary;
 		double birth = column_to_reduce.getBirthday();
@@ -80,25 +79,25 @@ void ComputePairs::compute_pairs_main(){
 		bool goto_found_persistence_pair = false;
 
 		do {
-			auto simplex = ctr->columns_to_reduce[j];
+			auto simplex = ctr->columns_to_reduce[j];// get CTR[i]
 			coface_entries.clear();
-			cofaces.setSimplexCoboundaryEnumerator(simplex, dcg);
+			cofaces.setSimplexCoboundaryEnumerator(simplex, dcg);// make cofaces data
 
-			while (cofaces.hasNextCoface() && !goto_found_persistence_pair) {
+			while (cofaces.hasNextCoface() && !goto_found_persistence_pair) {// repeat there remains a coface
 				BirthdayIndex coface = cofaces.getNextCoface();
 				coface_entries.push_back(coface);
-				if (might_be_apparent_pair && (simplex.getBirthday() == coface.getBirthday())) {
-					if (pivot_column_index.find(coface.getIndex()) == pivot_column_index.end()) {
-						pivot.copyBirthdayIndex(coface);
+				if (might_be_apparent_pair && (simplex.getBirthday() == coface.getBirthday())) {// if bt is the same, go thru
+					if (pivot_column_index.find(coface.getIndex()) == pivot_column_index.end()) {// if coface is not in pivot list
+						pivot.copyBirthdayIndex(coface);// I have a new pivot
 						goto_found_persistence_pair = true;// goto (B)
-					} else {
+					} else {// if pivot list contains this coface,
 						might_be_apparent_pair = false;// goto(A)
 					}
 				}
 			}
 
-			if (!goto_found_persistence_pair) {// (A) I haven't had a pivot
-				auto findWc = recorded_wc.find(j);
+			if (!goto_found_persistence_pair) {// (A) if pivot list contains this coface
+				auto findWc = recorded_wc.find(j); // we seek wc list by 'j'
 				if(findWc != recorded_wc.end()){// if the pivot is old,
 					auto wc = findWc -> second;
 					while (!wc.empty()){// we push the data of the old pivot's wc
@@ -106,7 +105,7 @@ void ComputePairs::compute_pairs_main(){
 						working_coboundary.push(e);
 						wc.pop();
 					}
-				} else {
+				} else {// if the pivot is new, 
 					for (auto e : coface_entries) {// making wc here
 						working_coboundary.push(e);
 					}
@@ -131,7 +130,7 @@ void ComputePairs::compute_pairs_main(){
 					outputPP(-1, birth, dcg -> threshold);
 					break;
 				}
-			} else {// (B) I have a pivot and output PP as Writepairs 
+			} else {// (B) I have a new pivot and output PP as Writepairs 
 				double death = pivot.getBirthday();
 				outputPP(dim, birth, death);
 				pivot_column_index.insert(make_pair(pivot.getIndex(), i));
@@ -202,7 +201,7 @@ void ComputePairs::assemble_columns_to_reduce() {
 					if (pivot_column_index.find(index) == pivot_column_index.end()) {
 						double birthday = dcg -> getBirthday(index, 1);
 						if (birthday != dcg -> threshold) {
-							ctr->columns_to_reduce.push_back(BirthdayIndex(birthday, index, 1));
+							ctr -> columns_to_reduce.push_back(BirthdayIndex(birthday, index, 1));
 						}
 					}
 				}
