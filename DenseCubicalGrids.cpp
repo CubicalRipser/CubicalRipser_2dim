@@ -28,6 +28,7 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
+#include <cassert>
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -44,7 +45,7 @@ DenseCubicalGrids::DenseCubicalGrids(const std::string& filename, double _thresh
 	threshold = _threshold;
 	format = _format;
 
-	if(format == DIPHA){// ???.complex, DIPHA format
+	if(format == DIPHA){ // ???.complex, DIPHA format
 		std::ifstream reading_file; 
 
 		ifstream fin( filename, ios::in | ios::binary ); 
@@ -52,17 +53,19 @@ DenseCubicalGrids::DenseCubicalGrids(const std::string& filename, double _thresh
 
 		int64_t d;
 		fin.read( ( char * ) &d, sizeof( int64_t ) ); // magic number
-		//assert(d == 8067171840);
+		assert(d == 8067171840);
 		fin.read( ( char * ) &d, sizeof( int64_t ) ); // type number
-		//assert(d == 1);
+		assert(d == 1);
 		fin.read( ( char * ) &d, sizeof( int64_t ) ); //data num
-		fin.read( ( char * ) &d, sizeof( int64_t ) ); // dim 
+		fin.read( ( char * ) &d, sizeof( int64_t ) ); // dim
 		dim = d;
+		assert(dim == 2);
 		fin.read( ( char * ) &d, sizeof( int64_t ) );
 		ax = d;
 		fin.read( ( char * ) &d, sizeof( int64_t ) );
 		ay = d;
-		cout << "ax : ay = " << ax << " : " << ay << std::endl;
+		assert(0 < ax && ax < 2000 && 0 < ay && ay < 1000);
+		cout << "ax : ay = " << ax << " : " << ay << endl;
 
 
 		double dou;
@@ -84,23 +87,26 @@ DenseCubicalGrids::DenseCubicalGrids(const std::string& filename, double _thresh
 		fin.close();
 	}  else if(format == PERSEUS){// PERSEUS format
 
-		std::ifstream reading_file; 
-		reading_file.open(filename.c_str(), std::ios::in); 
+		ifstream reading_file; 
+		reading_file.open(filename.c_str(), std::ios::in);
+		cout << filename << endl;
 
-		std::string reading_line_buffer; 
-		std::getline(reading_file, reading_line_buffer); 
+		string reading_line_buffer; 
+		getline(reading_file, reading_line_buffer); 
 		dim = std::atoi(reading_line_buffer.c_str()); 
-		std::getline(reading_file, reading_line_buffer); 
+		getline(reading_file, reading_line_buffer); 
 		ax = std::atoi(reading_line_buffer.c_str()); 
-		std::getline(reading_file, reading_line_buffer); 
+		getline(reading_file, reading_line_buffer); 
 		ay = std::atoi(reading_line_buffer.c_str()); 
+		assert(0 < ax && ax < 2000 && 0 < ay && ay < 1000);
+		cout << "ax : ay = " << ax << " : " << ay << std::endl;
 
 		for (int y = 0; y <ay + 2; ++y) { 
 			for (int x = 0; x < ax + 2; ++x) { 
 				if(0 < x && x <= ax && 0 < y && y <= ay){ 
 					if (!reading_file.eof()) { 
-						std::getline(reading_file, reading_line_buffer); 
-						dense2[x][y] = std::atoi(reading_line_buffer.c_str()); 
+						getline(reading_file, reading_line_buffer); 
+						dense2[x][y] = atoi(reading_line_buffer.c_str()); 
 						if (dense2[x][y] == -1) { 
 							dense2[x][y] = threshold;
 						} 
