@@ -79,7 +79,7 @@ void ComputePairs::compute_pairs_main(){
 		bool goto_found_persistence_pair = false;
 
 		do {
-			auto simplex = ctr->columns_to_reduce[j];// get CTR[i]
+			auto simplex = ctr -> columns_to_reduce[j];// get CTR[i]
 			coface_entries.clear();
 			cofaces.setSimplexCoboundaryEnumerator(simplex, dcg);// make cofaces data
 
