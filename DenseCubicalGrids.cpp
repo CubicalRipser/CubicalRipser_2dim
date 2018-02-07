@@ -40,13 +40,13 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace std;
 
 
-DenseCubicalGrids::DenseCubicalGrids(const std::string& filename, double _threshold, file_format _format)  {
+DenseCubicalGrids::DenseCubicalGrids(const string& filename, double _threshold, file_format _format)  {
 	
 	threshold = _threshold;
 	format = _format;
 
 	if(format == DIPHA){ // ???.complex, DIPHA format
-		std::ifstream reading_file; 
+		ifstream reading_file; 
 
 		ifstream fin( filename, ios::in | ios::binary ); 
 		cout << filename << endl;
@@ -88,18 +88,18 @@ DenseCubicalGrids::DenseCubicalGrids(const std::string& filename, double _thresh
 	}  else if(format == PERSEUS){// PERSEUS format
 
 		ifstream reading_file; 
-		reading_file.open(filename.c_str(), std::ios::in);
+		reading_file.open(filename.c_str(), ios::in);
 		cout << filename << endl;
 
 		string reading_line_buffer; 
 		getline(reading_file, reading_line_buffer); 
-		dim = std::atoi(reading_line_buffer.c_str()); 
+		dim = atoi(reading_line_buffer.c_str()); 
 		getline(reading_file, reading_line_buffer); 
-		ax = std::atoi(reading_line_buffer.c_str()); 
+		ax = atoi(reading_line_buffer.c_str()); 
 		getline(reading_file, reading_line_buffer); 
-		ay = std::atoi(reading_line_buffer.c_str()); 
+		ay = atoi(reading_line_buffer.c_str()); 
 		assert(0 < ax && ax < 2000 && 0 < ay && ay < 1000);
-		cout << "ax : ay = " << ax << " : " << ay << std::endl;
+		cout << "ax : ay = " << ax << " : " << ay << endl;
 
 		for (int y = 0; y <ay + 2; ++y) { 
 			for (int x = 0; x < ax + 2; ++x) { 
@@ -132,9 +132,9 @@ double DenseCubicalGrids::getBirthday(int index, int dim){
 	case 1:
 		switch(cm){
 		case 0: 
-			return max(dense2[cx    ][cy    ], dense2[cx + 1][cy    ]);
+			return max(dense2[cx][cy], dense2[cx + 1][cy]);
 		default:
-		 	return max(dense2[cx    ][cy    ], dense2[cx    ][cy + 1]);
+		 	return max(dense2[cx][cy], dense2[cx][cy + 1]);
 		}
 	case 2:
 		return max({dense2[cx][cy], dense2[cx + 1][cy], dense2[cx][cy + 1], dense2[cx + 1][cy + 1]});
