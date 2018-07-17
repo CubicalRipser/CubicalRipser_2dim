@@ -34,13 +34,13 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <cstdint>
 
-#include "DenseCubicalGrids.h"
-#include "BirthdayIndex.h"
-#include "ColumnsToReduce.h"
-#include "SimplexCoboundaryEnumerator.h"
-#include "WritePairs.h"
-#include "UnionFind.h"
-#include "ComputePairs.h"
+#include "dense_cubical_grids.h"
+#include "birthday_index.h"
+#include "columns_to_reduce.h"
+#include "simplex_coboundary_enumerator.h"
+#include "write_pairs.h"
+#include "union_find.h"
+#include "compute_pairs.h"
 
 using namespace std;
 
