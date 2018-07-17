@@ -1,32 +1,32 @@
 TARGET = CR2
-SRCS = CubicalRipser_2dim.cpp DenseCubicalGrids.cpp BirthdayIndex.cpp ColumnsToReduce.cpp SimplexCoboundaryEnumerator.cpp UnionFind.cpp WritePairs.cpp ComputePairs.cpp
-OBJS = CubicalRipser_2dim.o DenseCubicalGrids.o BirthdayIndex.o ColumnsToReduce.o SimplexCoboundaryEnumerator.o UnionFind.o WritePairs.o ComputePairs.o
+SRCS = cubicalripser_2dim.cpp dense_cubical_grids.cpp birthday_index.cpp columns_to_reduce.cpp simplex_coboundary_enumerator.cpp union_find.cpp write_pairs.cpp compute_pairs.cpp
+OBJS = cubicalripser_2dim.o dense_cubical_grids.o birthday_index.o columns_to_reduce.o simplex_coboundary_enumerator.o union_find.o write_pairs.o compute_pairs.o
  
 all: $(TARGET)
 
 $(TARGET): $(OBJS) $(SRCS)
 	c++ -std=c++11 -o $@ $(OBJS) 
 
-CubicalRipser_2dim.o: CubicalRipser_2dim.cpp
+cubicalripser_2dim.o: cubicalripser_2dim.cpp
 	c++ -std=c++11  -c -o $@ $< -Ofast
 
-DenseCubicalGrids.o: DenseCubicalGrids.cpp
+dense_cubical_grids.o: dense_cubical_grids.cpp
 	c++ -std=c++11  -c -o $@ $< -Ofast
 
-BirthdayIndex.o: BirthdayIndex.cpp
+birthday_index.o: birthday_index.cpp
 	c++ -std=c++11  -c -o $@ $< -Ofast
 
-ColumnsToReduce.o: ColumnsToReduce.cpp
+columns_to_reduce.o: columns_to_reduce.cpp
 	c++ -std=c++11  -c -o $@ $< -Ofast
 
-SimplexCoboundaryEnumerator.o: SimplexCoboundaryEnumerator.cpp
+simplex_coboundary_enumerator.o: simplex_coboundary_enumerator.cpp
 	c++ -std=c++11  -c -o $@ $< -Ofast
 
-UnionFind.o: UnionFind.cpp
+union_find.o: union_find.cpp
 	c++ -std=c++11  -c -o $@ $< -Ofast
 
-WritePairs.o: WritePairs.cpp
+write_pairs.o: write_pairs.cpp
 	c++ -std=c++11  -c -o $@ $< -Ofast
 
-ComputePairs.o: ComputePairs.cpp
+compute_pairs.o: compute_pairs.cpp
 	c++ -std=c++11  -c -o $@ $< -Ofast
