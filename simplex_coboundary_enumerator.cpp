@@ -101,7 +101,7 @@ bool SimplexCoboundaryEnumerator::hasNextCoface() {
 					nextCoface = BirthdayIndex(birthday, index, 2);
 					return true;
 				}
-			} else 
+			}
 			if(count == 1){ // lower
 				count++;
 				index = ((cy - 1) << 11) | cx;
@@ -121,7 +121,7 @@ bool SimplexCoboundaryEnumerator::hasNextCoface() {
 					nextCoface = BirthdayIndex(birthday, index, 2);
 					return true;
 				}
-			} else 
+			}
 			if(count == 1){ //left
 				count++;
 				index = ((cy) << 11) | (cx - 1);
